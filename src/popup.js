@@ -28,7 +28,13 @@ chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
   const tabUrl = new URL(tabs[0].url);
   const qrCodeUrl = getFreediumUrl(tabUrl);
 
-  new QRCode($qrCode, { text: qrCodeUrl, width: 200, height: 200, colorDark: '#000', colorLight: '#D3F6D3' });
+  new QRCode($qrCode, {
+    text: qrCodeUrl,
+    width: 200,
+    height: 200,
+    colorDark: '#000',
+    colorLight: '#D3F6D3'
+  });
 
   $copyBtn.removeAttribute('hidden');
   $openBtn.removeAttribute('hidden');
