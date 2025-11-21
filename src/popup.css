@@ -1,0 +1,58 @@
+:root {
+  --bg: #ffffff;
+  --fg: #111111;
+  --btn-bg: #f1f1f1;
+  --btn-fg: #000;
+  --border: #ddd;
+  --qr-border: #000;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1e1e1e;
+    --fg: #fff;
+    --btn-bg: #333;
+    --btn-fg: #fff;
+    --border: #555;
+    --qr-border: #D3F6D3;
+  }
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: system-ui, sans-serif;
+  margin: 0;
+  padding: 1rem;
+}
+
+.layout {
+  display: grid;
+  gap: 1rem;
+  min-width: calc(200px + 0.5rem);
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+button {
+  padding: .25rem 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--border);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+#qrcode {
+  border: 0.25rem solid var(--qr-border);
+  border-radius: .25rem;
+}
