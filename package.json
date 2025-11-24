@@ -23,7 +23,7 @@
   "homepage": "https://github.com/serzn1/medium-freedium-qr#readme",
   "devDependencies": {
     "@eslint/js": "9.19.0",
-    "chrome-types": "0.1.335",
+    "chrome-types": "0.1.390",
     "eslint": "9.19.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-prettier": "5.4.1",
