@@ -1,0 +1,64 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    # skip the loop-back push from the release commit itself
+    if: "!startsWith(github.event.head_commit.message, 'chore(release):')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install modules
+        run: npm ci
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Check for releasable commits
+        id: check
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ -z "$LAST_TAG" ]; then
+            echo "releasable=true" >> "$GITHUB_OUTPUT"
+          else
+            COUNT=$(git log "$LAST_TAG"..HEAD --oneline --grep='^fix' --grep='^feat' --grep='BREAKING CHANGE' -E | wc -l | tr -d ' ')
+            echo "releasable=$([ "$COUNT" -gt 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Bump version, commit & tag
+        if: steps.check.outputs.releasable == 'true'
+        run: npm run release
+
+      - name: Push commit and tag
+        if: steps.check.outputs.releasable == 'true'
+        run: git push --follow-tags
+
+      - name: Build zip
+        if: steps.check.outputs.releasable == 'true'
+        run: npm run zip
+
+      - name: Upload & publish to Chrome Web Store
+        if: steps.check.outputs.releasable == 'true'
+        run: npx chrome-webstore-upload-cli@3 upload --source medium-freedium-qr.zip --extension-id "$EXTENSION_ID" --auto-publish
+        env:
+          EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
+          CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
