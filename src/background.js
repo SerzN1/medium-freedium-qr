@@ -32,14 +32,10 @@ async function updateActionState(tabId) {
     // Check URL-based detection first (faster)
     const isMediumByUrl =
       url.hostname.endsWith('medium.com') ||
-      url.hostname.endsWith('freedium.cfd');
+      url.hostname.endsWith('freedium.cfd') ||
+      url.hostname.endsWith('freedium-mirror.cfd');
 
-    if (isMediumByUrl) {
-      await chrome.action.enable(tabId);
-      return;
-    }
-
-    // Check meta tags for custom domains
+    // Check meta tags for custom domains (and to verify page is reachable)
     const results = await chrome.scripting.executeScript({
       target: { tabId },
       func: () => {
@@ -52,7 +48,7 @@ async function updateActionState(tabId) {
 
     const isMediumByMeta = results[0]?.result === true;
 
-    if (isMediumByMeta) {
+    if (isMediumByUrl || isMediumByMeta) {
       await chrome.action.enable(tabId);
     } else {
       await chrome.action.disable(tabId);

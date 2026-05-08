@@ -1,13 +1,19 @@
 {
   "name": "medium-freedium-qr",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "QR code generator for Medium articles that converts Medium links to Freedium links.",
   "scripts": {
     "prettier": "npx prettier **/*.{md,html,json} -w",
+    "prettier:check": "npx prettier **/*.{md,html,json} --check",
     "lint": "eslint **/*.js --no-warn-ignored",
     "lint:fix": "npm run lint -- --fix --no-warn-ignored",
     "zip": "cd src && zip -r ../medium-freedium-qr.zip . -x '*.DS_Store' && cd ..",
+    "prerelease": "npm run lint && npm run prettier:check",
+    "release": "commit-and-tag-version",
+    "release:minor": "commit-and-tag-version --release-as minor",
+    "release:major": "commit-and-tag-version --release-as major",
+    "release:dry": "commit-and-tag-version --dry-run",
     "prepare": "husky install"
   },
   "repository": {
@@ -24,6 +30,7 @@
   "devDependencies": {
     "@eslint/js": "9.19.0",
     "chrome-types": "0.1.335",
+    "commit-and-tag-version": "^12.7.1",
     "eslint": "9.19.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-prettier": "5.4.1",

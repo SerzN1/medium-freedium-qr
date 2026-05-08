@@ -1,7 +1,8 @@
 /* global QRCode */
 
-const FREEDIUM_URL = 'https://freedium.cfd';
-const FREEDIUM_MIRROR_URL = 'https://freedium-mirror.cfd';
+const PROTOCOL = 'https://';
+const FREEDIUM_BASE = 'freedium.cfd';
+const MIRROR_BASE = 'freedium-mirror.cfd';
 
 /**
  * Generates the Freedium URL based on the given URL.
@@ -9,19 +10,25 @@ const FREEDIUM_MIRROR_URL = 'https://freedium-mirror.cfd';
  * @returns {string}
  */
 function getFreediumUrl(base, url) {
+  const baseUrl = `${PROTOCOL}${base}`;
+
+  // Root page — just return the base
   if (url.pathname === '/' || url.pathname === '') {
-    return base;
+    return baseUrl;
   }
 
-  if (url.hostname.endsWith('freedium.cfd')) {
-    return url.toString();
+  // Already on freedium or mirror — extract the embedded article URL and rebase
+  if (
+    url.hostname.endsWith(FREEDIUM_BASE) ||
+    url.hostname.endsWith(MIRROR_BASE)
+  ) {
+    const articleUrl = url.pathname.slice(1); // strip leading '/'
+    if (!articleUrl) return baseUrl;
+    return `${baseUrl}/${articleUrl}`;
   }
 
-  if (url.hostname.endsWith('medium.com')) {
-    return `${base}/${url.toString()}`;
-  }
-
-  return `${base}/${url.toString()}`;
+  // Medium or custom Medium domain — pass the full URL to the target base
+  return `${baseUrl}/${url.toString()}`;
 }
 
 chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
@@ -30,11 +37,11 @@ chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
   const $openBtn = document.getElementById('openBtn');
   const $mirrorBtn = document.getElementById('mirrorBtn');
   const tabUrl = new URL(tabs[0].url);
-  const qrCodeUrl = getFreediumUrl(FREEDIUM_URL, tabUrl);
-  const mirrorUrl = getFreediumUrl(FREEDIUM_MIRROR_URL, tabUrl);
+  const qrCodeUrl = getFreediumUrl(FREEDIUM_BASE, tabUrl);
+  const mirrorUrl = getFreediumUrl(MIRROR_BASE, tabUrl);
 
   new QRCode($qrCode, {
-    text: qrCodeUrl,
+    text: mirrorUrl,
     width: 200,
     height: 200,
     colorDark: '#000',
@@ -44,6 +51,13 @@ chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
   $copyBtn.removeAttribute('hidden');
   $openBtn.removeAttribute('hidden');
   $mirrorBtn.removeAttribute('hidden');
+
+  if (tabUrl.hostname.endsWith(FREEDIUM_BASE)) {
+    $openBtn.setAttribute('disabled', '');
+  }
+  if (tabUrl.hostname.endsWith(MIRROR_BASE)) {
+    $mirrorBtn.setAttribute('disabled', '');
+  }
 
   $copyBtn.addEventListener('click', () => {
     navigator.clipboard.writeText(qrCodeUrl);

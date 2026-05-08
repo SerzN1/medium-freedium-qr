@@ -52,6 +52,11 @@ button:hover {
   opacity: 0.8;
 }
 
+button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
 #qrcode {
   border: 0.25rem solid var(--qr-border);
   border-radius: .25rem;
