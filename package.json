@@ -1,6 +1,6 @@
 {
   "name": "medium-freedium-qr",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "description": "QR code generator for Medium articles that converts Medium links to Freedium links.",
   "scripts": {
