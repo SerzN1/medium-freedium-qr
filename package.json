@@ -27,7 +27,7 @@
     "@eslint/js": "9.19.0",
     "chrome-types": "0.1.335",
     "commit-and-tag-version": "^12.7.1",
-    "eslint": "9.19.0",
+    "eslint": "10.3.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-prettier": "5.4.1",
     "globals": "15.14.0",
